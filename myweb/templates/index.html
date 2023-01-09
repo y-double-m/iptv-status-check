@@ -34,7 +34,14 @@
 <body>
 
     <script type="text/javascript">
-        
+
+        function getNotificationPermission() {
+            Notification.requestPermission();
+            if (({{state1}} != 200) || ({{state2}} != 200)) {
+                new Notification("Connection Error!", {body:'IPTV 서비스 에러가 발생하였습니다'});
+            }
+        }
+
         setInterval('window.location.reload()', 60000);
         function sendRequest() {
             var xhr = new XMLHttpRequest();
@@ -42,6 +49,7 @@
             xhr.send();
         }
         sendRequest();
+        getNotificationPermission();
     </script>
 
     <!-- ======= Top Bar ======= -->
@@ -65,7 +73,6 @@
         <div class="container d-flex align-items-center justify-content-between">
 
         <h1 class="logo"><span>U+</span> IPTV 서비스 상태</h1>
-        <!-- Uncomment below if you prefer to use an image logo -->
         <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt=""></a>-->
 
         </div>
@@ -83,9 +90,9 @@
     <table class="table table-bordered">
         <thead class="table-info">
           <tr>
-            <th scope="col" class="fs-3 fw-semibold" width="300px">IPTV Service</th>
+            <th scope="col" class="fs-3 fw-semibold" width="350px">IPTV Service</th>
             <th scope="col" class="fs-4 fw-semibold text-center" width="300px">Connection Status</th>
-            <th scope="col" class="fs-4 fw-semibold text-center" width="250px">HTTP Status Code</th>
+            <th scope="col" class="fs-4 fw-semibold text-center" width="300px">HTTP Status Code</th>
             <th scope="col" class="fs-4 fw-semibold">Case</th>
           </tr>
         </thead>
@@ -97,7 +104,7 @@
             <td>
                 {% if state1 == 200 %}
                 <div class="color d-grid gap-2"> 
-                    <button type="button" class="btn btn-primary btn-lg">Success</button>
+                    <button type="button" class="btn btn-success btn-lg">Success</button>
                 </div>
                 {% else %}
                 <div class="color d-grid gap-2">
@@ -137,7 +144,7 @@
             <td>
                 {% if state2 == 200 %}
                 <div class="color d-grid gap-2">
-                    <button type="button" class="btn btn-primary btn-lg">Success</button>
+                    <button type="button" class="btn btn-success btn-lg">Success</button>
                 </div>
                 {% else %}
                 <div class="color d-grid gap-2"> 

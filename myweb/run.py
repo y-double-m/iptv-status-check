@@ -34,7 +34,7 @@ def request_code():
     url3 = 'https://google.com'
     
     response1 = requests.post(url1, headers=headers, json=json_data1, verify=False)    
-    response2 = requests.get(url2, params=params, headers=headers, verify=False)
+    response2 = requests.post(url3, params=params, headers=headers, verify=False)
     
     state1 = response1.status_code
     state2 = response2.status_code
