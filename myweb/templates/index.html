@@ -35,10 +35,19 @@
 
     <script type="text/javascript">
 
-        function getNotificationPermission() {
-            Notification.requestPermission();
+        window.onload = function () {
+            if (window.Notification) {
+                Notification.requestPermission();
+            }
+        }
+ 
+        function notify() {
             if (({{state1}} != 200) || ({{state2}} != 200)) {
-                new Notification("Connection Error!", {body:'IPTV 서비스 에러가 발생하였습니다'});
+                var notification = new Notification("Connection Error!", {body:'IPTV 서비스 접속 에러가 발생하였습니다'});
+ 
+                notification.onclick = function () {
+                    window.open('http://127.0.0.1:5000/');
+                };
             }
         }
 
@@ -48,8 +57,10 @@
             xhr.open("get", "{{url_for('request_code')}}");
             xhr.send();
         }
+        
+
         sendRequest();
-        getNotificationPermission();
+        notify();
     </script>
 
     <!-- ======= Top Bar ======= -->
@@ -72,34 +83,25 @@
     <header id="header" class="d-flex align-items-center">
         <div class="container d-flex align-items-center justify-content-between">
 
-        <h1 class="logo"><span>U+</span> IPTV 서비스 상태</h1>
+        <h1 class="logo"><span>U+</span> IPTV 클라우드 서비스 상태</h1>
         <!-- <a href="index.html" class="logo"><img src="assets/img/logo.png" alt=""></a>-->
 
         </div>
     </header><!-- End Header -->
 
-    <!-- ======= Hero Section ======= -->
-    <section id="hero" class="d-flex align-items-center">
-        <div class="container" data-aos="zoom-out" data-aos-delay="100">
-        <h1>보안을 <span>생활화</span> 합시다</h1>
-        </div>
-    </section><!-- End Hero -->
-
-    <br>
-    <br>
     <table class="table table-bordered">
         <thead class="table-info">
           <tr>
-            <th scope="col" class="fs-3 fw-semibold" width="350px">IPTV Service</th>
-            <th scope="col" class="fs-4 fw-semibold text-center" width="300px">Connection Status</th>
-            <th scope="col" class="fs-4 fw-semibold text-center" width="300px">HTTP Status Code</th>
-            <th scope="col" class="fs-4 fw-semibold">Case</th>
+            <th scope="col" class="fs-3 fw-semibold" width="350px">IPTV 서비스</th>
+            <th scope="col" class="fs-4 fw-semibold text-center" width="400px">연결 상태</th>
+            <th scope="col" class="fs-4 fw-semibold text-center" width="200px">HTTP 상태 코드</th>
+            <th scope="col" class="fs-4 fw-semibold">설명</th>
           </tr>
         </thead>
         <tbody class="table-group-divider">
           <tr>
             <th scope="row">
-                <div class="fs-4 fw-semibold">멀티캐스트 앱 배포</div>
+                <div class="fs-4 fw-semibold">멀티캐스트 앱 배포(Repair)(WAS1)</div>
             </th>
             <td>
                 {% if state1 == 200 %}
@@ -139,7 +141,7 @@
           </tr>
           <tr>
             <th scope="row">
-                <div class="fs-4 fw-semibold">서버 기반 리모콘</div>
+                <div class="fs-4 fw-semibold">멀티캐스트 앱 배포(Repair)(WAS2)</div>
             </th>
             <td>
                 {% if state2 == 200 %}
@@ -177,8 +179,84 @@
             <td class="fs-5 fw-semibold">Server가 Gateway 역할을 하고 있으며, 업스트림 서버에서 적시에 응답을 받지 못했습니다(Gateway Timeout)</td>
             {% endif %}
           </tr>
+          <tr>
+            <th scope="row">
+                <div class="fs-4 fw-semibold">서버 기반 리모콘 앱</div>
+            </th>
+            <td>
+                {% if state3 == 200 %}
+                <div class="color d-grid gap-2">
+                    <button type="button" class="btn btn-success btn-lg">Success</button>
+                </div>
+                {% else %}
+                <div class="color d-grid gap-2"> 
+                    <button type="button" class="btn btn-danger btn-lg">Warning</button>
+                </div>
+                {% endif %}
+            </td>
+            <td class="fs-4 fw-semibold text-center">{{state3}}</td>
+            {% if state3 == 200 %}
+            <td class="fs-5 fw-semibold">요청이 성공적으로 수행되었습니다(OK)</td>
+            {% elif state3 == 400 %}
+            <td class="fs-5 fw-semibold">Client 오류로 인해 Server가 요청을 처리할 수 없습니다(Bad Request)</td>
+            {% elif state3 == 401 %}
+            <td class="fs-5 fw-semibold">현재 요청하는 Resource에 접근하려면 인증이 필요합니다(Unauthorized)</td>
+            {% elif state3 == 403 %}
+            <td class="fs-5 fw-semibold">Client가 Server에 접근할 권한을 갖고 있지 않습니다(Forbidden)</td>
+            {% elif state3 == 404 %}
+            <td class="fs-5 fw-semibold">현재 요청하는 Resource가 존재하지 않습니다(Not Found)</td>
+            {% elif state3 == 405 %}
+            <td class="fs-5 fw-semibold">현재 요청하는 Resource에 맞지 않는 Method를 사용했습니다(Method Not Allowed)</td>
+            {% elif state3 == 408 %}
+            <td class="fs-5 fw-semibold">요청에 응답하는 시간이 오래 걸리고 있습니다(Request Timeout)</td>
+            {% elif state3 == 500 %}
+            <td class="fs-5 fw-semibold">Server에 오류가 발생해 응답할 수 없습니다(Internal Server Error)</td>
+            {% elif state3 == 502 %}
+            <td class="fs-5 fw-semibold">Server가 Gateway로부터 잘못된 응답을 수신했습니다(Bad Gateway)</td>
+            {% elif state3 == 503 %}
+            <td class="fs-5 fw-semibold">Server가 요청을 처리할 준비가 되지 않았습니다(Service Unavailable)</td>
+            {% elif state3 == 504 %}
+            <td class="fs-5 fw-semibold">Server가 Gateway 역할을 하고 있으며, 업스트림 서버에서 적시에 응답을 받지 못했습니다(Gateway Timeout)</td>
+            {% endif %}
+          </tr>
         </tbody>
     </table>
+
+    <table class="table table-bordered">
+        <thead class="table-info">
+          <tr>
+            <th scope="col" class="fs-3 fw-semibold">IPTV 서비스</th>
+            <th scope="col" class="fs-4 fw-semibold text-center">Response</th>
+          </tr>
+        </thead>
+        <tbody class="table-group-divider">
+          <tr>
+            <th scope="row">
+                <div class="fs-4 fw-semibold">멀티캐스트 앱 배포(Repair)(WAS1)</div>
+            </th>
+            <td class="fs-4 fw-semibold" width="1500" style="word-break:break-all;">{{text1}}</td>
+          </tr>
+          <tr>
+            <th scope="row">
+                <div class="fs-4 fw-semibold">멀티캐스트 앱 배포(Repair)(WAS2)</div>
+            </th>
+            <td class="fs-4 fw-semibold">{{text2}}</td>
+          </tr>
+          <tr>
+            <th scope="row">
+                <div class="fs-4 fw-semibold">서버 기반 리모콘 앱</div>
+            </th>
+            <td class="fs-4 fw-semibold">{{text3}}</td>
+          </tr>
+        </tbody>
+    </table>
+
+    <!-- ======= Hero Section ======= 
+    <section id="hero" class="d-flex align-items-center">
+        <div class="container" data-aos="zoom-out" data-aos-delay="100">
+        <h1>보안을 <span>생활화</span> 합시다</h1>
+        </div>
+    </section> -->
 
     <!-- ======= Footer ======= -->
     <footer id="footer">
